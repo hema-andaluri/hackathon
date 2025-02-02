@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Database Management</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: #343a40;
+            padding: 20px;
+            color: white;
+            height: 100vh;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #ffffff;
+            padding-bottom: 10px;
+        }
+
+        .employee-list {
+            list-style: none;
+        }
+
+        .employee-list li {
+            padding: 12px;
+            margin: 5px 0;
+            background: #495057;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.3s;
+        }
+
+        .employee-list li:hover {
+            background: #6c757d;
+        }
+
+        .logout-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.3s;
+        }
+
+        .logout-button:hover {
+            background: #0774cc; 
+        }
+
+        .content {
+            flex: 1;
+            padding: 30px;
+            background: #ffffff;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .section {
+            display: none; 
+            text-align: center; 
+            padding: 20px; 
+            border-radius: 8px; 
+            background: #f1f3f5; 
+            margin-bottom: 15px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+
+        .section h3 {
+            color: #007bff; 
+            margin-bottom: 10px; 
+        }
+
+        #employeeDetails {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        #employeeDetails img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            margin-top: 10px;
+        }
+
+        #details p {
+            margin: 5px; 
+            font-size: 1rem; 
+        }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: #fff;
+        }
+
+        .task-item button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .task-item button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <h2>Faculty</h2>
+            <ul class="employee-list">
+                <li onclick="showSection('attendanceSection')">Attendance</li>
+                <li onclick="showSection('examSchedule')">Exams Schedule</li>
+                <li onclick="showSection('tasks')">My Tasks</li>
+                <li onclick="showSection('timeTable')">Time Table</li>
+                <li onclick="showSection('workLoad')">Work Load</li>
+            </ul>
+            <a href="index.html">
+                <button class="logout-button" onclick="logOut()">Logout</button>
+            </a>
+         </aside>
+         <main class="content">
+            <!-- My Information Section -->
+            <div id="employeeDetails" class="section" style="display:flex;">
+                <h2>My Information</h2>
+                <img src="https://t4.ftcdn.net/jpg/00/97/00/09/360_F_97000908_wwH2goIihwrMoeV9QF3BW6HtpsVFaNVM.jpg" alt="Employee Image">
+                <div id="details">
+                    <h3 id="userName"></h3>
+                    <p id="userAddress"></p>
+                    <p id="userEmail"></p>
+                    <p id="userMobile"></p>
+                    <p id="userDOB"></p>
+                </div>
+            </div>
+
+            <!-- Tasks Section -->
+            <div id="tasks" class="section">
+                <h3>My Tasks</h3>
+                <div id="taskDetails"></div>
+            </div>
+         </main>
+     </div>
+
+     <script>
+        function setUserDetails(username) {
+            const userDetails = {
+                john_doe: {
+                    name: "John Doe",
+                    address: "123 Main St, Cityville",
+                    email: "john@gmail.com",
+                    mobile: "9876543210",
+                    dob: "01-01-1985",
+                    attendance: [],
+                    examSchedule: "Upcoming Exam: Math - 10/01/2025",
+                    timeTable: "Monday - Friday: 9 AM - 5 PM",
+                    workLoad: "Current workload: 4 Courses"
+                },
+                jane_doe: {
+                    name: "Jane Doe",
+                    address: "456 Elm St, Townsville",
+                    email: "jane@gmail.com",
+                    mobile: "1234567890",
+                    dob: "02-02-1990",
+                    attendance: [],
+                    examSchedule: "Upcoming Exam: Science - 11/01/2025",
+                    timeTable: "Monday - Friday: 10 AM - 6 PM",
+                    workLoad: "Current workload: 3 Courses"
+                },
+                bob_brown: {
+                    name: "Bob Brown",
+                    address: "789 Oak St, Villageburg",
+                    email: "bob@gmail.com",
+                    mobile: "5551234567",
+                    dob: "03-03-1988",
+                    attendance: [],
+                    examSchedule: "Upcoming Exam: History - 12/01/2025",
+                    timeTable: "Monday - Friday: 8 AM - 4 PM",
+                    workLoad: "Current workload: 5 Courses"
+                }
+            };
+
+            if (userDetails[username]) {
+                const details = userDetails[username];
+                document.getElementById('userName').textContent = details.name;
+                document.getElementById('userAddress').textContent = details.address;
+                document.getElementById('userEmail').textContent = details.email;
+                document.getElementById('userMobile').textContent = `Mobile: ${details.mobile}`;
+                document.getElementById('userDOB').textContent = `DOB: ${details.dob}`;
+
+                // Populate tasks (only tasks assigned by the HOD or Dean)
+                const assignedTasks = JSON.parse(localStorage.getItem(details.name)) || [];
+                if (assignedTasks.length > 0) {
+                    document.getElementById('taskDetails').innerHTML = assignedTasks.map(task => `
+                        <div class="task-item">
+                            <span>${task.task} (Due: ${task.dueDate})</span>
+                            <button onclick="markTaskAsCompleted('${details.name}', '${task.task}', '${task.assignedBy}')">Mark as Completed</button>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('taskDetails').innerHTML = `<p>No tasks are assigned.</p>`;
+                }
+            }
+        }
+
+        function markTaskAsCompleted(facultyName, task, assignedBy) {
+    // Retrieve tasks from localStorage
+    let tasks = JSON.parse(localStorage.getItem(facultyName)) || [];
+
+    // Remove the completed task
+    tasks = tasks.filter(t => t.task !== task);
+
+    // Update localStorage
+    localStorage.setItem(facultyName, JSON.stringify(tasks));
+
+    // Notify the assigner (Dean or HOD)
+    const notification = {
+        faculty: facultyName, // Ensure the faculty name is correctly set
+        task: task,
+        status: "completed",
+        timestamp: new Date().toLocaleString()
+    };
+    let notifications = JSON.parse(localStorage.getItem(`${assignedBy.toLowerCase()}Notifications`)) || [];
+    notifications.push(notification);
+    localStorage.setItem(`${assignedBy.toLowerCase()}Notifications`, JSON.stringify(notifications));
+
+    // Refresh the task list
+    setUserDetails(facultyName.toLowerCase().replace(/ /g, '_'));
+}
+
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
+        // Ensure `showSection` is available before `onclick` handlers are triggered
+        window.onload = function () {
+            const loggedInUser = getQueryParam('username') || 'john_doe';
+            setUserDetails(loggedInUser);
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,324 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOD Dashboard</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            margin: 0;
+            padding: 0;
+            background-color: #e9ecef;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #f0f0f0;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.3s;
+            display: block;
+            margin-bottom: 10px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .logout-button {
+            background-color: #dc3545;
+            margin-top: 20px;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            background-color: #ffffff;
+            border-left: 1px solid #ddd;
+        }
+
+        #employeeDetails {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+
+        #employeeDetails img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+
+        #details {
+            width: 100%;
+        }
+
+        #details h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+
+        h3 {
+            text-align: center;
+        }
+
+        p, ul, table {
+            text-align: center;
+        }
+
+        .active-heading {
+            color: blue;
+        }
+
+        .task-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+            margin: auto;
+        }
+
+        .task-form input, .task-form select, .task-form button {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .task-form button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+
+        .task-form button:hover {
+            background-color: #218838;
+        }
+
+        .notification-item {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .notification-item p {
+            margin: 5px 0;
+        }
+
+        .notification-item small {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+    <aside class="sidebar">
+        <h2>HOD Dashboard</h2>
+        <button class="button" onclick="showSection('schedule')">Schedule</button>
+        <button class="button" onclick="showSection('myTasks')">My Tasks</button>
+        <button class="button" onclick="showSection('assignTasks')">Assign Tasks</button>
+        <button class="button" onclick="showSection('examSchedules')">Exam Schedules</button>
+        <button class="button" onclick="showSection('attendance')">Attendance</button>
+        <button class="button" onclick="showSection('notifications')">Notifications</button>
+        <button class="button logout-button" onclick="window.location.href='index.html'">Logout</button>
+    </aside>
+    <main class="content">
+        <!-- My Information Section -->
+        <div id="employeeDetails">
+            <h2>My Information</h2>
+            <img src="https://t4.ftcdn.net/jpg/00/97/00/09/360_F_97000908_wwH2goIihwrMoeV9QF3BW6HtpsVFaNVM.jpg" alt="HOD Image">
+            <div id="details">
+                <h3>SALWAR (43)</h3>
+                <p>Address1</p>
+                <p>Salwar@dummyapis.com</p>
+                <p>Mobile - 4121091095</p>
+                <p>DOB - 26/08/1979</p>
+            </div>
+        </div>
+
+        <!-- My Tasks Section -->
+        <div id="myTasks" style="display:none;">
+            <h3>My Tasks</h3>
+            <div id="taskList"></div>
+        </div>
+
+        <!-- Assign Tasks Section -->
+        <div id="assignTasks" style="display:none;">
+            <h3>Assign Tasks Section</h3>
+            <p>Assign tasks to faculty members.</p>
+            <form class="task-form" onsubmit="assignTask(event)">
+                <label for="taskName">Task:</label>
+                <input type="text" id="taskName" required>
+                
+                <label for="assignee">Assign To:</label>
+                <select id="assignee" required>
+                    <option value="John Doe">John Doe</option>
+                    <option value="Jane Doe">Jane Doe</option>
+                    <option value="Bob Brown">Bob Brown</option>
+                </select>
+                
+                <label for="dueDate">Due Date:</label>
+                <input type="date" id="dueDate" required>
+                
+                <button type="submit">Assign Task</button>
+            </form>
+        </div>
+
+        <!-- Notifications Section -->
+        <div id="notifications" style="display:none;">
+            <h3>Notifications</h3>
+            <div id="notificationList"></div>
+        </div>
+    </main>
+</div>
+
+<script>
+    function showSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('.content > div').forEach(section => {
+            section.style.display = 'none';
+        });
+
+        // Show the selected section
+        document.getElementById(sectionId).style.display = 'block';
+
+        // Load tasks if the "My Tasks" section is shown
+        if (sectionId === 'myTasks') {
+            loadMyTasks();
+        }
+
+        // Load notifications if the notifications section is shown
+        if (sectionId === 'notifications') {
+            loadNotifications();
+        }
+    }
+
+    function loadMyTasks() {
+        // Retrieve tasks assigned to the HOD (Salwar)
+        const hodName = "Salwar"; // Replace with the actual HOD's name
+        const tasks = JSON.parse(localStorage.getItem(hodName)) || [];
+
+        const taskList = document.getElementById('taskList');
+        if (taskList) {
+            if (tasks.length > 0) {
+                taskList.innerHTML = tasks.map(task => `
+                    <div class="task-item">
+                        <span>${task.task} (Due: ${task.dueDate})</span>
+                        <button onclick="markTaskAsCompleted('${hodName}', '${task.task}', '${task.assignedBy}')">Mark as Completed</button>
+                    </div>
+                `).join('');
+            } else {
+                taskList.innerHTML = `<p>No tasks are assigned to you.</p>`;
+            }
+        }
+    }
+
+    function assignTask(event) {
+        event.preventDefault();
+
+        const taskName = document.getElementById('taskName').value;
+        const assignee = document.getElementById('assignee').value;
+        const dueDate = document.getElementById('dueDate').value;
+
+        // Retrieve existing tasks for the faculty member
+        let tasks = JSON.parse(localStorage.getItem(assignee)) || [];
+
+        // Add the new task
+        tasks.push({ task: taskName, dueDate: dueDate, assignedBy: "HOD", status: "assigned" });
+
+        // Store the updated tasks back in localStorage
+        localStorage.setItem(assignee, JSON.stringify(tasks));
+
+        // Notify the HOD
+        const notification = {
+            faculty: assignee,
+            task: taskName,
+            status: "assigned",
+            timestamp: new Date().toLocaleString()
+        };
+        let notifications = JSON.parse(localStorage.getItem('hodNotifications')) || [];
+        notifications.push(notification);
+        localStorage.setItem('hodNotifications', JSON.stringify(notifications));
+
+        alert(`Task "${taskName}" assigned to ${assignee}.`);
+    }
+
+    function markTaskAsCompleted(facultyName, task, assignedBy) {
+        // Retrieve tasks from localStorage
+        let tasks = JSON.parse(localStorage.getItem(facultyName)) || [];
+
+        // Remove the completed task
+        tasks = tasks.filter(t => t.task !== task);
+
+        // Update localStorage
+        localStorage.setItem(facultyName, JSON.stringify(tasks));
+
+        // Notify the assigner (Dean or HOD)
+        const notification = {
+            faculty: facultyName,
+            task: task,
+            status: "completed",
+            timestamp: new Date().toLocaleString()
+        };
+        let notifications = JSON.parse(localStorage.getItem(`${assignedBy.toLowerCase()}Notifications`)) || [];
+        notifications.push(notification);
+        localStorage.setItem(`${assignedBy.toLowerCase()}Notifications`, JSON.stringify(notifications));
+
+        // Refresh the task list
+        loadMyTasks();
+    }
+
+    function loadNotifications() {
+    const notifications = JSON.parse(localStorage.getItem('hodNotifications')) || [];
+    const notificationList = document.getElementById('notificationList');
+    if (notificationList) {
+        notificationList.innerHTML = notifications.map(notification => `
+            <div class="notification-item">
+                <p><strong>${notification.faculty}</strong>: ${notification.task} - ${notification.status}</p>
+                <p><small>${notification.timestamp}</small></p>
+            </div>
+        `).join('');
+    }
+}
+</script>
+</body>
+</html>
